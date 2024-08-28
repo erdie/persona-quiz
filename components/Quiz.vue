@@ -21,7 +21,7 @@
         </button>
     </div>
     
-    <div v-else class="mt-4">
+    <div v-else class="max-w-2xl mx-auto mt-4 text-center">
         <h3 class="text-xl font-bold">Results</h3>
         <p>You are: <span class="font-bold">{{ personaType }}</span></p>
     </div>
