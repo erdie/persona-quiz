@@ -10,6 +10,7 @@
                         :value="option"
                         v-model="answers[index]"
                         class="mr-2"
+                        required
                     />
                     {{ option }}
                 </label>
