@@ -119,6 +119,8 @@ const determinePersonaType = () => {
         personaType.value = getPersonaLabel(dominantTypes[0])
     } else if (dominantTypes.length === 2 && maxCount >= 6) {
         personaType.value = getCombinedPersonaLabel(dominantTypes[0], dominantTypes[1])
+    } else if (dominantTypes.length === 3 && maxCount === 5) {
+        personaType.value = getTiebreakerPersonaLabel(dominantTypes)
     } else {
         personaType.value = getPersonaLabel(dominantTypes[0]) // Default to the first if more than two are tied or no dominant pair with 6 answers
     }
@@ -146,5 +148,18 @@ const getCombinedPersonaLabel = (type1: string, type2: string) => {
         case 'CD': return 'The Innovator Hacker'
         default: return ''
     }
+}
+
+const getTiebreakerPersonaLabel = (types: string[]) => {
+    const [type1, type2, type3] = types.sort()
+    
+    if (type1 === 'A' && type2 === 'B') return 'The Pragmatic Connector'
+    if (type1 === 'A' && type2 === 'C') return 'The Pragmatic Innovator'
+    if (type1 === 'A' && type2 === 'D') return 'The Pragmatic Hacker'
+    if (type1 === 'B' && type2 === 'C') return 'The Connector Innovator'
+    if (type1 === 'B' && type2 === 'D') return 'The Connector Hacker'
+    if (type1 === 'C' && type2 === 'D') return 'The Innovator Hacker'
+
+    return getPersonaLabel(type1) // Fallback
 }
 </script>
