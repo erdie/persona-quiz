@@ -1,0 +1,114 @@
+<template>
+    <div class="max-w-2xl mx-auto p-4" v-if="!submitted">
+        <div v-for="(question, index) in questions" :key="index" class="mb-6">
+            <h2 class="text-lg font-bold mb-2">{{ question.text }}</h2>
+            <div v-for="(option, optIndex) in question.options" :key="optIndex" class="mb-1">
+                <label class="flex items-center">
+                    <input
+                        type="radio"
+                        :name="`question-${index}`"
+                        :value="option"
+                        v-model="answers[index]"
+                        class="mr-2"
+                    />
+                    {{ option }}
+                </label>
+            </div>
+        </div>
+    
+        <button @click="submitQuiz" class="bg-blue-500 text-white px-4 py-2 rounded">
+            Submit Quiz
+        </button>
+    </div>
+    
+    <div v-else class="mt-4">
+        <h3 class="text-xl font-bold">Results</h3>
+        <p>You are: <span class="font-bold">{{ personaType }}</span></p>
+    </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const questions = ref([
+    {
+        text: 'Which type of task do you prefer?',
+        options: ['A - Practical and hands-on', 'B - Collaborative and teamwork-focused', 'C - Creative and experimental', 'D - Technical and problem-solving'],
+    },
+    {
+        text: 'What motivates you most in a project?',
+        options: ['A - Achieving tangible results', 'B - Building connections and relationships', 'C - Innovating and creating new things', 'D - Solving complex problems'],
+    },
+    {
+        text: 'What role do you usually take in a team?',
+        options: ['A - The one who gets things done', 'B - The one who keeps the team together', 'C - The one who brings new ideas', 'D - The one who tackles the hardest challenges'],
+    },
+    {
+        text: 'Which approach do you prefer for solving problems?',
+        options: ['A - Step-by-step, practical solutions', 'B - Brainstorming with others', 'C - Trying out unconventional methods', 'D - Analyzing and debugging'],
+    },
+    {
+        text: 'What is your strength?',
+        options: ['A - Practicality', 'B - Networking', 'C - Creativity', 'D - Technical expertise'],
+    },
+    {
+        text: 'How do you approach new projects?',
+        options: ['A - With a clear plan and steps', 'B - By gathering input from others', 'C - By experimenting and iterating', 'D - By diving into technical details'],
+    },
+    {
+        text: 'How do you handle challenges?',
+        options: ['A - With a focus on practical solutions', 'B - By seeking help from others', 'C - By thinking outside the box', 'D - By breaking down the problem and analyzing it'],
+    },
+    {
+        text: 'What do you value most in your work?',
+        options: ['A - Efficiency and productivity', 'B - Collaboration and teamwork', 'C - Innovation and creativity', 'D - Accuracy and technical precision'],
+    },
+    {
+        text: 'What is your preferred working style?',
+        options: ['A - Independently and efficiently', 'B - In a team environment', 'C - Flexibly and creatively', 'D - With a focus on technical details'],
+    },
+    {
+        text: 'How do you prefer to learn new skills?',
+        options: ['A - Through hands-on practice', 'B - By learning from others', 'C - By experimenting with new ideas', 'D - By studying and analyzing technical information'],
+    }
+])
+
+const answers = ref<string[]>(Array(questions.value.length).fill(''))
+const submitted = ref(false)
+const personaType = ref('')
+
+const submitQuiz = () => {
+    submitted.value = true
+    determinePersonaType()
+}
+
+const determinePersonaType = () => {
+    const answerCounts = { A: 0, B: 0, C: 0, D: 0 }
+    
+    answers.value.forEach(answer => {
+        const type = answer.charAt(0) // Get the first character (A, B, C, D)
+        if (answerCounts[type] !== undefined) {
+            answerCounts[type]++
+        }
+    })
+    
+    const maxCount = Math.max(...Object.values(answerCounts))
+    const dominantTypes = Object.keys(answerCounts).filter(type => answerCounts[type] === maxCount)
+    
+    if (dominantTypes.length === 1) {
+        personaType.value = getPersonaLabel(dominantTypes[0])
+    } else {
+        personaType.value = getPersonaLabel(dominantTypes[0]) // You can refine this to better handle ties
+    }
+}
+
+const getPersonaLabel = (type: string) => {
+    switch (type) {
+        case 'A': return 'The Pragmatic'
+        case 'B': return 'The Connector'
+        case 'C': return 'The Innovator'
+        case 'D': return 'The Hacker'
+        default: return ''
+    }
+}
+</script>
