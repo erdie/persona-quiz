@@ -1,7 +1,7 @@
 <template>
     <div class="max-w-2xl mx-auto p-4" v-if="!submitted">
         <div v-for="(question, index) in questions" :key="index" class="mb-6">
-            <h2 class="text-lg font-bold mb-2">{{ question.text }}</h2>
+            <h2 class="text-lg font-bold mb-2">{{ index + 1 }}. {{ question.text }}</h2>
             <div v-for="(option, optIndex) in question.options" :key="optIndex" class="mb-1">
                 <label class="flex items-center">
                     <input
@@ -70,6 +70,26 @@ const questions = ref([
     {
         text: 'How do you prefer to learn new skills?',
         options: ['A - Through hands-on practice', 'B - By learning from others', 'C - By experimenting with new ideas', 'D - By studying and analyzing technical information'],
+    },
+    {
+        text: 'What is your preferred type of project?',
+        options: ['A - Projects with clear outcomes', 'B - Projects that require collaboration', 'C - Projects that allow for innovation', 'D - Projects that involve complex problem-solving'],
+    },
+    {
+        text: 'How do you manage your time?',
+        options: ['A - With a strict schedule', 'B - By balancing social interactions', 'C - With flexibility to explore ideas', 'D - By prioritizing based on complexity'],
+    },
+    {
+        text: 'What type of feedback do you prefer?',
+        options: ['A - Direct and actionable', 'B - Encouraging and supportive', 'C - Constructive with room for creativity', 'D - Detailed and analytical'],
+    },
+    {
+        text: 'How do you contribute to a brainstorming session?',
+        options: ['A - By suggesting practical ideas', 'B - By ensuring everyone’s voice is heard', 'C - By introducing innovative concepts', 'D - By analyzing feasibility of ideas'],
+    },
+    {
+        text: 'What is your preferred toolset?',
+        options: ['A - Tools that enhance productivity', 'B - Tools that facilitate communication', 'C - Tools that enable creativity', 'D - Tools that provide deep technical insights'],
     }
 ])
 
@@ -97,8 +117,10 @@ const determinePersonaType = () => {
     
     if (dominantTypes.length === 1) {
         personaType.value = getPersonaLabel(dominantTypes[0])
+    } else if (dominantTypes.length === 2 && maxCount >= 6) {
+        personaType.value = getCombinedPersonaLabel(dominantTypes[0], dominantTypes[1])
     } else {
-        personaType.value = getPersonaLabel(dominantTypes[0]) // You can refine this to better handle ties
+        personaType.value = getPersonaLabel(dominantTypes[0]) // Default to the first if more than two are tied or no dominant pair with 6 answers
     }
 }
 
@@ -108,6 +130,20 @@ const getPersonaLabel = (type: string) => {
         case 'B': return 'The Connector'
         case 'C': return 'The Innovator'
         case 'D': return 'The Hacker'
+        default: return ''
+    }
+}
+
+const getCombinedPersonaLabel = (type1: string, type2: string) => {
+    const combinedTypes = [type1, type2].sort().join('')
+
+    switch (combinedTypes) {
+        case 'AB': return 'The Pragmatic Connector'
+        case 'AC': return 'The Pragmatic Innovator'
+        case 'AD': return 'The Pragmatic Hacker'
+        case 'BC': return 'The Connector Innovator'
+        case 'BD': return 'The Connector Hacker'
+        case 'CD': return 'The Innovator Hacker'
         default: return ''
     }
 }
