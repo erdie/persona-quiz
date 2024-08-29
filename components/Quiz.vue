@@ -9,8 +9,8 @@
                         :name="`question-${index}`"
                         :value="option"
                         v-model="answers[index]"
-                        class="mr-2"
                         required
+                        class="mr-2"
                     />
                     {{ option }}
                 </label>
@@ -98,9 +98,18 @@ const answers = ref<string[]>(Array(questions.value.length).fill(''))
 const submitted = ref(false)
 const personaType = ref('')
 
+// Computed property to check if all questions are answered
+const allQuestionsAnswered = computed(() => {
+    return answers.value.every(answer => answer !== '')
+})
+
 const submitQuiz = () => {
-    submitted.value = true
-    determinePersonaType()
+    if (allQuestionsAnswered.value) {
+        submitted.value = true
+        determinePersonaType()
+    } else {
+        alert('Please answer all questions before submitting the quiz.')
+    }
 }
 
 const determinePersonaType = () => {
