@@ -1,32 +1,56 @@
 <template>
     <div class="max-w-2xl mx-auto p-4" v-if="!submitted">
-        <div v-for="(question, index) in questions" :key="index" class="mb-6">
-            <h2 class="text-lg font-bold mb-2">{{ index + 1 }}. {{ question.text }}</h2>
-            <div v-for="(option, optIndex) in question.options" :key="optIndex" class="mb-1">
-                <label class="flex items-center">
+        <div class="mb-6">
+            <!-- Progress Bar -->
+            <div class="relative w-full bg-gray-200 rounded-full h-2.5 mb-4">
+                <div
+                    class="absolute bg-blue-500 h-2.5 rounded-full"
+                    :style="{ width: `${progressPercentage}%` }"
+                ></div>
+            </div>
+    
+            <!-- Current Question -->
+            <div v-if="currentQuestion < questions.length">
+                <h2 class="text-lg font-bold mb-2">
+                    {{ currentQuestion + 1 }}. {{ questions[currentQuestion].text }}
+                </h2>
+                <div
+                    v-for="(option, optIndex) in questions[currentQuestion].options"
+                    :key="optIndex"
+                    class="mb-1"
+                >
+                    <label class="flex items-center">
                     <input
                         type="radio"
-                        :name="`question-${index}`"
+                        :name="`question-${currentQuestion}`"
                         :value="option"
-                        v-model="answers[index]"
+                        v-model="answers[currentQuestion]"
                         required
                         class="mr-2"
                     />
                     {{ option }}
-                </label>
+                    </label>
+                </div>
+        
+                <!-- Next Button -->
+                <button
+                    @click="nextQuestion"
+                    class="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+                    :disabled="!answers[currentQuestion]"
+                >
+                    Next
+                </button>
             </div>
         </div>
-    
-        <button @click="submitQuiz" class="bg-blue-500 text-white px-4 py-2 rounded">
-            Submit Quiz
-        </button>
     </div>
-    
+  
+    <!-- Result -->
     <div v-else class="max-w-2xl mx-auto mt-4 text-center">
         <h3 class="text-xl font-bold">Results</h3>
         <p>You are: <span class="font-bold">{{ personaType }}</span></p>
     </div>
 </template>
+  
 
 <script setup lang="ts">
 import { ref } from 'vue'
@@ -96,20 +120,26 @@ const questions = ref([
 
 const answers = ref<string[]>(Array(questions.value.length).fill(''))
 const submitted = ref(false)
+const currentQuestion = ref(0)
 const personaType = ref('')
 
-// Computed property to check if all questions are answered
-const allQuestionsAnswered = computed(() => {
-    return answers.value.every(answer => answer !== '')
+// Progress percentage based on the current question
+const progressPercentage = computed(() => {
+    return ((currentQuestion.value + 1) / questions.value.length) * 100
 })
 
-const submitQuiz = () => {
-    if (allQuestionsAnswered.value) {
-        submitted.value = true
-        determinePersonaType()
+// Go to the next question or submit the quiz if on the last question
+const nextQuestion = () => {
+    if (currentQuestion.value < questions.value.length - 1) {
+        currentQuestion.value++
     } else {
-        alert('Please answer all questions before submitting the quiz.')
+        submitQuiz()
     }
+}
+
+const submitQuiz = () => {
+    submitted.value = true
+    determinePersonaType()
 }
 
 const determinePersonaType = () => {
