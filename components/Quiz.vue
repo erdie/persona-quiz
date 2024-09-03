@@ -1,55 +1,66 @@
 <template>
     <div class="max-w-2xl mx-auto p-4" v-if="!submitted">
         <div class="mb-6">
-            <!-- Progress Bar -->
-            <div class="relative w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                <div
-                    class="absolute bg-blue-500 h-2.5 rounded-full"
-                    :style="{ width: `${progressPercentage}%` }"
-                ></div>
-            </div>
-    
-            <!-- Current Question -->
-            <div v-if="currentQuestion < questions.length">
-                <h2 class="text-lg font-bold mb-2">
-                    {{ currentQuestion + 1 }}. {{ questions[currentQuestion].text }}
-                </h2>
-                <div
-                    v-for="(option, optIndex) in questions[currentQuestion].options"
-                    :key="optIndex"
-                    class="mb-1"
-                >
-                    <label class="flex items-center">
+        <!-- Progress Bar -->
+        <div class="relative w-full bg-gray-200 rounded-full h-2.5 mb-4">
+            <div
+            class="absolute bg-blue-500 h-2.5 rounded-full"
+            :style="{ width: `${progressPercentage}%` }"
+            ></div>
+        </div>
+
+        <!-- Current Question -->
+        <div v-if="currentQuestion < questions.length">
+            <h2 class="text-lg font-bold mb-2">
+                {{ currentQuestion + 1 }}. {{ questions[currentQuestion].text }}
+            </h2>
+            <div
+                v-for="(option, optIndex) in questions[currentQuestion].options"
+                :key="optIndex"
+                class="mb-1"
+            >
+                <label class="flex items-center">
                     <input
-                        type="radio"
-                        :name="`question-${currentQuestion}`"
-                        :value="option"
-                        v-model="answers[currentQuestion]"
-                        required
-                        class="mr-2"
+                    type="radio"
+                    :name="`question-${currentQuestion}`"
+                    :value="option"
+                    v-model="answers[currentQuestion]"
+                    required
+                    class="mr-2"
                     />
                     {{ option }}
-                    </label>
-                </div>
-        
-                <!-- Next Button -->
-                <button
-                    @click="nextQuestion"
-                    class="bg-blue-500 text-white px-4 py-2 rounded mt-4"
-                    :disabled="!answers[currentQuestion]"
-                >
-                    Next
-                </button>
+                </label>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex justify-between mt-4">
+            <button
+                @click="previousQuestion"
+                class="bg-gray-500 text-white px-4 py-2 rounded"
+                :disabled="currentQuestion === 0"
+            >
+                Previous
+            </button>
+            
+            <button
+                @click="nextOrSubmit"
+                class="bg-blue-500 text-white px-4 py-2 rounded"
+                :disabled="!answers[currentQuestion]"
+            >
+                {{ currentQuestion === questions.length - 1 ? 'Submit' : 'Next' }}
+            </button>
             </div>
         </div>
+        </div>
     </div>
-  
+
     <!-- Result -->
     <div v-else class="max-w-2xl mx-auto mt-4 text-center">
         <h3 class="text-xl font-bold">Results</h3>
         <p>You are: <span class="font-bold">{{ personaType }}</span></p>
     </div>
 </template>
+
   
 
 <script setup lang="ts">
@@ -125,21 +136,28 @@ const personaType = ref('')
 
 // Progress percentage based on the current question
 const progressPercentage = computed(() => {
-    return ((currentQuestion.value + 1) / questions.value.length) * 100
+  return ((currentQuestion.value + 1) / questions.value.length) * 100
 })
 
 // Go to the next question or submit the quiz if on the last question
-const nextQuestion = () => {
-    if (currentQuestion.value < questions.value.length - 1) {
-        currentQuestion.value++
-    } else {
-        submitQuiz()
-    }
+const nextOrSubmit = () => {
+  if (currentQuestion.value < questions.value.length - 1) {
+    currentQuestion.value++
+  } else {
+    submitQuiz()
+  }
+}
+
+// Go to the previous question
+const previousQuestion = () => {
+  if (currentQuestion.value > 0) {
+    currentQuestion.value--
+  }
 }
 
 const submitQuiz = () => {
-    submitted.value = true
-    determinePersonaType()
+  submitted.value = true
+  determinePersonaType()
 }
 
 const determinePersonaType = () => {
