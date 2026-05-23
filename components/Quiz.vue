@@ -28,8 +28,8 @@
                         required
                         class="mr-2"
                         />
-                        {{ option }}
                     </label>
+                    {{ option }}
                 </div>
 
                 <!-- Buttons -->
