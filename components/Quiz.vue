@@ -1,42 +1,47 @@
 <template>
-    <div class="max-w-2xl mx-auto p-4" v-if="!submitted">
-        <div class="mb-6">
+    <div class="max-w-2xl mx-auto p-6 bg-white shadow-sm rounded-xl border border-gray-100" v-if="!submitted">
+        <div class="mb-8">
             <!-- Progress Bar -->
-            <div class="relative w-full bg-gray-200 rounded-full h-2.5 mb-4">
+            <div class="relative w-full bg-gray-100 rounded-full h-2 mb-6 overflow-hidden">
                 <div
-                class="absolute bg-blue-500 h-2.5 rounded-full"
+                class="absolute top-0 left-0 bg-blue-600 h-full transition-all duration-300 ease-out"
                 :style="{ width: `${progressPercentage}%` }"
                 ></div>
             </div>
 
             <!-- Current Question -->
             <div v-if="currentQuestion < questions.length">
-                <h2 class="text-lg font-bold mb-2">
+                <h2 class="text-xl font-semibold text-gray-800 mb-6">
                     {{ currentQuestion + 1 }}. {{ questions[currentQuestion].text }}
                 </h2>
-                <div
-                    v-for="(option, optIndex) in questions[currentQuestion].options"
-                    :key="optIndex"
-                    class="mb-1"
-                >
-                    <label class="flex items-center">
+                <div class="space-y-3">
+                    <label
+                        v-for="(option, optIndex) in questions[currentQuestion].options"
+                        :key="optIndex"
+                        class="flex items-center p-4 border rounded-lg cursor-pointer transition-all duration-200"
+                        :class="[
+                            answers[currentQuestion] === option 
+                                ? 'border-blue-500 bg-blue-50/50 text-blue-700' 
+                                : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700'
+                        ]"
+                    >
                         <input
-                        type="radio"
-                        :name="`question-${currentQuestion}`"
-                        :value="option"
-                        v-model="answers[currentQuestion]"
-                        required
-                        class="mr-2"
+                            type="radio"
+                            :name="`question-${currentQuestion}`"
+                            :value="option"
+                            v-model="answers[currentQuestion]"
+                            class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                         />
+                        <span class="ml-3 font-medium">{{ option }}</span>
                     </label>
-                    {{ option }}
                 </div>
 
                 <!-- Buttons -->
-                <div class="flex justify-between mt-4">
+                <div class="flex justify-between mt-8">
                     <button
                         @click="previousQuestion"
-                        class="bg-gray-500 text-white px-4 py-2 rounded"
+                        class="px-5 py-2.5 rounded-lg font-medium transition-colors"
+                        :class="currentQuestion === 0 ? 'text-gray-400 bg-gray-100 cursor-not-allowed' : 'text-gray-600 bg-gray-100 hover:bg-gray-200'"
                         :disabled="currentQuestion === 0"
                     >
                         Previous
@@ -44,7 +49,8 @@
                     
                     <button
                         @click="nextOrSubmit"
-                        class="bg-blue-500 text-white px-4 py-2 rounded"
+                        class="px-5 py-2.5 rounded-lg font-medium transition-all"
+                        :class="!answers[currentQuestion] ? 'bg-blue-300 text-white cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm'"
                         :disabled="!answers[currentQuestion]"
                     >
                         {{ currentQuestion === questions.length - 1 ? 'Submit' : 'Next' }}
@@ -55,9 +61,13 @@
     </div>
 
     <!-- Result -->
-    <div v-else class="max-w-2xl mx-auto mt-4 text-center">
-        <h3 class="text-xl font-bold">Results</h3>
-        <p>You are: <span class="font-bold">{{ personaType }}</span></p>
+    <div v-else class="max-w-2xl mx-auto mt-8 p-8 bg-white border border-gray-100 shadow-sm rounded-xl text-center">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 text-blue-600 mb-4">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-800 mb-2">Quiz Complete!</h3>
+        <p class="text-gray-600 text-lg">Your persona is:</p>
+        <p class="text-3xl font-extrabold text-blue-600 mt-4">{{ personaType }}</p>
     </div>
 </template>
 
